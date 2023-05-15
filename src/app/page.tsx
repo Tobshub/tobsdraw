@@ -29,6 +29,11 @@ export default function Home() {
     }
   };
 
+  const clearCanvas = () => {
+    // canvasCtx?.clearRect(0, 0, canvasCtx?.canvas.width, canvasCtx?.canvas.height);
+    canvasCtx?.resetTransform();
+  };
+
   return (
     <main className={styles.main}>
       <canvas
@@ -41,6 +46,7 @@ export default function Home() {
       >
         <p>Your browser does not support this.</p>
       </canvas>
+      <button onClick={clearCanvas}>CLEAR</button>
     </main>
   );
 }
