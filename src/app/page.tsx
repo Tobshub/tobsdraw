@@ -25,24 +25,27 @@ export default function Home() {
         canvasCtx.stroke();
       } else {
         canvasCtx.moveTo(e.pageX, e.pageY);
+        canvasCtx.beginPath();
       }
     }
   };
 
   const clearCanvas = () => {
-    // canvasCtx?.clearRect(0, 0, canvasCtx?.canvas.width, canvasCtx?.canvas.height);
-    canvasCtx?.resetTransform();
+    if (canvasCtx) {
+      canvasCtx.clearRect(0, 0, canvasCtx.canvas.width, canvasCtx.canvas.height);
+    }
   };
 
   return (
     <main className={styles.main}>
       <canvas
-        height={1000}
+        height={800}
         width={1000}
         ref={canvasRef}
         onMouseMove={handleMouseMove}
         onMouseDown={() => setShouldDraw(true)}
         onMouseUp={() => setShouldDraw(false)}
+        onMouseOut={() => setShouldDraw(false)}
       >
         <p>Your browser does not support this.</p>
       </canvas>
