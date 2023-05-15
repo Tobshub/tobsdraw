@@ -1,95 +1,69 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+"use client";
+import { useRef, MouseEvent, useState, useEffect } from "react";
+import styles from "./page.module.css";
 
 export default function Home() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [canvasCtx, setCanvasCtx] = useState(canvasRef.current?.getContext("2d"));
+  const [shouldDraw, setShouldDraw] = useState(false);
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      const ctx = canvasRef.current.getContext("2d");
+      if (ctx) {
+        ctx.strokeStyle = "rgb(255, 255, 255)";
+        ctx.beginPath();
+      }
+      setCanvasCtx(ctx);
+    }
+  }, [canvasRef.current]);
+
+  const handleMouseMove = (e: MouseEvent) => {
+    if (canvasCtx) {
+      if (shouldDraw) {
+        canvasCtx.lineTo(e.pageX, e.pageY);
+        canvasCtx.stroke();
+      } else {
+        canvasCtx.moveTo(e.pageX, e.pageY);
+      }
+    }
+  };
+
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      <canvas
+        height={1000}
+        width={1000}
+        ref={canvasRef}
+        onMouseMove={handleMouseMove}
+        onMouseDown={() => setShouldDraw(true)}
+        onMouseUp={() => setShouldDraw(false)}
+      >
+        <p>Your browser does not support this.</p>
+      </canvas>
     </main>
-  )
+  );
+}
+
+// function canvasMagic(ctx: CanvasRenderingContext2D) {
+//   ctx.strokeStyle = "rgb(255, 255, 255)";
+//   ctx.fillStyle = "rgb(255, 0, 0)";
+
+//   // ctx.fillRect(0, 0, 300, 400);
+
+//   ctx.beginPath();
+//   ctx.moveTo(50, 50);
+//   ctx.lineTo(150, 50);
+//   ctx.lineTo(100, 50 + 50 * Math.tan(degToRad(60)));
+//   ctx.lineTo(50, 50);
+//   ctx.fill();
+
+//   ctx.lineWidth = 1;
+//   ctx.font = "48px arial";
+//   ctx.fillText("Hello world", 300, 300);
+//   ctx.strokeText("Hello world", 300, 300);
+// }
+
+export function degToRad(value: number) {
+  return (value * Math.PI) / 180;
 }
