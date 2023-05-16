@@ -4,35 +4,36 @@ import styles from "./page.module.css";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [canvasCtx, setCanvasCtx] = useState(canvasRef.current?.getContext("2d"));
+  const [ctx, setCanvasCtx] = useState(canvasRef.current?.getContext("2d"));
   const [shouldDraw, setShouldDraw] = useState(false);
+  const controlsContainerRef = useRef<HTMLDivElement>(null);
+  const [isEraser, setIsEraser] = useState(false);
+  const colorChangerRef = useRef<HTMLInputElement>(null);
+  const backgroundColor = "white";
 
   useEffect(() => {
     if (canvasRef.current) {
       const ctx = canvasRef.current.getContext("2d");
       if (ctx) {
-        ctx.strokeStyle = "rgb(255, 255, 255)";
+        resetCanvas(ctx, backgroundColor);
         ctx.beginPath();
+        ctx.fillStyle = colorChangerRef.current?.value ?? "black";
       }
       setCanvasCtx(ctx);
     }
   }, [canvasRef.current]);
 
   const handleMouseMove = (e: MouseEvent) => {
-    if (canvasCtx) {
+    if (ctx) {
+      const x = e.pageX,
+        y = e.pageY;
       if (shouldDraw) {
-        canvasCtx.lineTo(e.pageX, e.pageY);
-        canvasCtx.stroke();
+        ctx.lineTo(x, y);
+        ctx.stroke();
       } else {
-        canvasCtx.moveTo(e.pageX, e.pageY);
-        canvasCtx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.beginPath();
       }
-    }
-  };
-
-  const clearCanvas = () => {
-    if (canvasCtx) {
-      canvasCtx.clearRect(0, 0, canvasCtx.canvas.width, canvasCtx.canvas.height);
     }
   };
 
@@ -49,29 +50,49 @@ export default function Home() {
       >
         <p>Your browser does not support this.</p>
       </canvas>
-      <button onClick={clearCanvas}>CLEAR</button>
+      <div className={styles.controls} ref={controlsContainerRef} style={{ opacity: shouldDraw ? "35%" : "80%" }}>
+        <button onClick={() => resetCanvas(ctx, backgroundColor)}>CLEAR</button>
+        <input
+          type="color"
+          onChange={(e) => {
+            if (ctx) {
+              ctx.strokeStyle = e.target.value;
+              ctx.fillStyle = e.target.value;
+            }
+          }}
+          ref={colorChangerRef}
+        />
+        <button
+          onClick={() => {
+            if (!ctx) {
+              return;
+            } else if (isEraser) {
+              ctx.lineWidth = 1;
+              ctx.strokeStyle = colorChangerRef.current?.value ?? "black";
+              setIsEraser(false);
+            } else {
+              ctx.lineWidth = 50;
+              ctx.strokeStyle = backgroundColor;
+              setIsEraser(true);
+            }
+          }}
+        >
+          {isEraser ? "PEN" : "ERASER"}
+        </button>
+      </div>
     </main>
   );
 }
 
-// function canvasMagic(ctx: CanvasRenderingContext2D) {
-//   ctx.strokeStyle = "rgb(255, 255, 255)";
-//   ctx.fillStyle = "rgb(255, 0, 0)";
-
-//   // ctx.fillRect(0, 0, 300, 400);
-
-//   ctx.beginPath();
-//   ctx.moveTo(50, 50);
-//   ctx.lineTo(150, 50);
-//   ctx.lineTo(100, 50 + 50 * Math.tan(degToRad(60)));
-//   ctx.lineTo(50, 50);
-//   ctx.fill();
-
-//   ctx.lineWidth = 1;
-//   ctx.font = "48px arial";
-//   ctx.fillText("Hello world", 300, 300);
-//   ctx.strokeText("Hello world", 300, 300);
-// }
+function resetCanvas(ctx: CanvasRenderingContext2D | null | undefined, backgroundColor: string) {
+  if (ctx) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.lineWidth = 2;
+    ctx.fillStyle = backgroundColor;
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.fill();
+  }
+}
 
 export function degToRad(value: number) {
   return (value * Math.PI) / 180;

@@ -1,4 +1,15 @@
 .main {
+  position: relative;
   min-height: 100vh;
   min-width: 100vw;
+}
+
+.controls {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  width: 100%;
+  padding-bottom: 30px;
+  border-bottom: 1px solid black;
+  transition: opacity 300ms ease;
 }
