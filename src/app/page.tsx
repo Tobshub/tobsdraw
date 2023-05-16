@@ -17,6 +17,7 @@ export default function Home() {
       if (ctx) {
         resetCanvas(ctx, backgroundColor);
         ctx.beginPath();
+        ctx.lineJoin = "round";
         ctx.fillStyle = colorChangerRef.current?.value ?? "black";
       }
       setCanvasCtx(ctx);
