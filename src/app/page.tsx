@@ -30,6 +30,10 @@ export default function Home() {
     if (canvasRef.current) {
       const ctx = canvasRef.current.getContext("2d");
       if (ctx) {
+        if (window) {
+          ctx.canvas.width = window.innerWidth;
+          ctx.canvas.height = window.innerHeight;
+        }
         ctxUtils.resetCanvas();
         ctx.beginPath();
         ctx.lineJoin = "round";
