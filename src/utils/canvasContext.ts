@@ -7,7 +7,6 @@ export default function useCanvasCtx(ctx: CanvasRenderingContext2D | null | unde
   const resetCanvas = () => {
     if (ctx) {
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      ctx.lineWidth = 1;
       ctx.fillStyle = backgroundColor ?? "white";
       ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       ctx.fill();
