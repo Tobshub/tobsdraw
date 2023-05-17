@@ -106,6 +106,6 @@ export default function Home() {
   );
 }
 
-export function degToRad(value: number) {
-  return (value * Math.PI) / 180;
-}
+// function degToRad(value: number) {
+//   return (value * Math.PI) / 180;
+// }
