@@ -26,8 +26,8 @@ export default function Home() {
 
   const handleMouseMove = (e: MouseEvent) => {
     if (ctx) {
-      const x = e.pageX,
-        y = e.pageY;
+      const x = e.clientX - e.currentTarget.offsetLeft;
+      const y = e.clientY - e.currentTarget.offsetTop;
       if (shouldDraw) {
         ctx.lineTo(x, y);
         ctx.stroke();
