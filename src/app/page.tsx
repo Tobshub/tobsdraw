@@ -1,6 +1,7 @@
 "use client";
 import { useRef, MouseEvent, useState, useEffect } from "react";
 import styles from "./page.module.css";
+import useCanvasCtx from "@/utils/canvasContext";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -9,26 +10,11 @@ export default function Home() {
   const [isEraser, setIsEraser] = useState(false);
   const colorChangerRef = useRef<HTMLInputElement>(null);
   const backgroundColor = "white";
-  const [previousStates, setPreviousStates] = useState<ImageData[]>([]);
-  const [nextStates, setNextStates] = useState<ImageData[]>([]);
-
-  const getCurrentState = () => {
-    if (ctx) {
-      return ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
-    }
-  };
-
-  const saveState = () => {
-    if (ctx) {
-      const lastCanvasState = getCurrentState() as ImageData;
-      setPreviousStates((state) => [...state, lastCanvasState]);
-      setNextStates([]);
-    }
-  };
+  const ctxUtils = useCanvasCtx(ctx, backgroundColor);
 
   const clearCanvas = () => {
-    saveState();
-    resetCanvas(ctx, backgroundColor);
+    ctxUtils.saveState();
+    ctxUtils.resetCanvas();
   };
 
   const stopDrawing = () => {
@@ -37,27 +23,11 @@ export default function Home() {
     }
   };
 
-  const revertCanvasState = () => {
-    if (previousStates.length && ctx) {
-      const currentState = getCurrentState() as ImageData;
-      ctx.putImageData(previousStates.pop() as ImageData, 0, 0);
-      setNextStates((state) => [...state, currentState]);
-    }
-  };
-
-  const returnCanvasState = () => {
-    if (nextStates.length && ctx) {
-      const currentState = getCurrentState() as ImageData;
-      ctx.putImageData(nextStates.pop() as ImageData, 0, 0);
-      setPreviousStates((state) => [...state, currentState]);
-    }
-  };
-
   useEffect(() => {
     if (canvasRef.current) {
       const ctx = canvasRef.current.getContext("2d");
       if (ctx) {
-        resetCanvas(ctx, backgroundColor);
+        ctxUtils.resetCanvas();
         ctx.beginPath();
         ctx.lineJoin = "round";
         ctx.fillStyle = colorChangerRef.current?.value ?? "black";
@@ -111,10 +81,10 @@ export default function Home() {
         >
           {isEraser ? "PEN" : "ERASER"}
         </button>
-        <button onClick={revertCanvasState} disabled={!previousStates.length}>
+        <button onClick={ctxUtils.undoCanvasState} disabled={!ctxUtils.previousStates.length}>
           UNDO
         </button>
-        <button onClick={returnCanvasState} disabled={!nextStates.length}>
+        <button onClick={ctxUtils.redoCanvasState} disabled={!ctxUtils.nextStates.length}>
           REDO
         </button>
       </div>
@@ -124,7 +94,7 @@ export default function Home() {
         ref={canvasRef}
         onMouseMove={handleMouseMove}
         onMouseDown={() => {
-          saveState();
+          ctxUtils.saveState();
           setShouldDraw(true);
         }}
         onMouseUp={stopDrawing}
@@ -134,16 +104,6 @@ export default function Home() {
       </canvas>
     </main>
   );
-}
-
-function resetCanvas(ctx: CanvasRenderingContext2D | null | undefined, backgroundColor: string) {
-  if (ctx) {
-    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.lineWidth = 1;
-    ctx.fillStyle = backgroundColor;
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.fill();
-  }
 }
 
 export function degToRad(value: number) {
