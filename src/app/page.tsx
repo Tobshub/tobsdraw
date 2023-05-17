@@ -22,6 +22,7 @@ export default function Home() {
   const stopDrawing = () => {
     if (shouldDraw && ctx) {
       setShouldDraw(false);
+      ctx.beginPath();
     }
   };
 
@@ -39,10 +40,10 @@ export default function Home() {
     }
   }, [canvasRef.current]);
 
-  const handleMouseMove = (e: MouseEvent<HTMLCanvasElement>) => {
-    if (ctx) {
-      const x = e.clientX - e.currentTarget.offsetLeft;
-      const y = e.clientY - e.currentTarget.offsetTop;
+  const handleMouseMove = (clientX: number, clientY: number) => {
+    if (ctx && canvasRef.current) {
+      const x = clientX - canvasRef.current.offsetLeft;
+      const y = clientY - canvasRef.current.offsetTop;
       if (shouldDraw) {
         ctx.lineTo(x, y);
         ctx.stroke();
@@ -120,13 +121,27 @@ export default function Home() {
         height={500}
         width={500}
         ref={canvasRef}
-        onMouseMove={handleMouseMove}
+        onMouseMove={(e) => handleMouseMove(e.clientX, e.clientY)}
         onMouseDown={() => {
           ctxUtils.saveState();
           setShouldDraw(true);
         }}
         onMouseUp={stopDrawing}
         onMouseOut={stopDrawing}
+        onTouchStart={(e) => {
+          e.preventDefault();
+          ctxUtils.saveState();
+          setShouldDraw(true);
+        }}
+        onTouchMove={(e) => {
+          e.preventDefault();
+          const touch = e.changedTouches[0];
+          handleMouseMove(touch.clientX, touch.clientY);
+        }}
+        onTouchEnd={(e) => {
+          e.preventDefault();
+          stopDrawing();
+        }}
       >
         <p>Your browser does not support this.</p>
       </canvas>
