@@ -6,7 +6,6 @@ export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [ctx, setCanvasCtx] = useState(canvasRef.current?.getContext("2d", { willReadFrequently: true }));
   const [shouldDraw, setShouldDraw] = useState(false);
-  const controlsContainerRef = useRef<HTMLDivElement>(null);
   const [isEraser, setIsEraser] = useState(false);
   const colorChangerRef = useRef<HTMLInputElement>(null);
   const backgroundColor = "white";
@@ -83,7 +82,7 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <div className={styles.controls} ref={controlsContainerRef} style={{ opacity: shouldDraw ? "35%" : "80%" }}>
+      <div className={styles.controls} style={{ opacity: shouldDraw ? "35%" : "80%" }}>
         <button onClick={clearCanvas}>CLEAR</button>
         <input
           type="color"
