@@ -5,7 +5,9 @@ import useCanvasCtx from "@/utils/canvasContext";
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [ctx, setCanvasCtx] = useState(canvasRef.current?.getContext("2d", { willReadFrequently: true }));
+  const [ctx, setCanvasCtx] = useState(
+    canvasRef.current?.getContext("2d", { willReadFrequently: true })
+  );
   const [shouldDraw, setShouldDraw] = useState(false);
   const [isEraser, setIsEraser] = useState(false);
   const colorChangerRef = useRef<HTMLInputElement>(null);
@@ -52,7 +54,10 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <div className={styles.controls} style={{ opacity: shouldDraw ? "35%" : "80%" }}>
+      <div
+        className={styles.controls}
+        style={{ opacity: shouldDraw ? "35%" : "80%" }}
+      >
         <button onClick={clearCanvas}>CLEAR</button>
         <input
           type="color"
@@ -97,10 +102,16 @@ export default function Home() {
         >
           {isEraser ? "PEN" : "ERASER"}
         </button>
-        <button onClick={ctxUtils.undoCanvasState} disabled={!ctxUtils.previousStates.length}>
+        <button
+          onClick={ctxUtils.undoCanvasState}
+          disabled={!ctxUtils.previousStates.length}
+        >
           UNDO
         </button>
-        <button onClick={ctxUtils.redoCanvasState} disabled={!ctxUtils.nextStates.length}>
+        <button
+          onClick={ctxUtils.redoCanvasState}
+          disabled={!ctxUtils.nextStates.length}
+        >
           REDO
         </button>
       </div>

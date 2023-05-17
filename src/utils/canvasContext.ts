@@ -1,6 +1,9 @@
 import { useState } from "react";
 
-export default function useCanvasCtx(ctx: CanvasRenderingContext2D | null | undefined, backgroundColor?: string) {
+export default function useCanvasCtx(
+  ctx: CanvasRenderingContext2D | null | undefined,
+  backgroundColor?: string
+) {
   const [previousStates, setPreviousStates] = useState<ImageData[]>([]);
   const [nextStates, setNextStates] = useState<ImageData[]>([]);
 
