@@ -158,22 +158,11 @@ function ControlPanel({ ctx, ctxUtils, shouldDraw }: ControlPanelProps) {
         }}
         ref={colorChangerRef}
       />
-      <select
-        onChange={(e) => {
-          if (ctx) {
-            ctx.lineWidth = parseInt(e.target.value);
-          }
-        }}
-      >
-        <option value={1} defaultChecked>
-          1px
-        </option>
-        <option value={2}>2px</option>
-        <option value={4}>4px</option>
-        <option value={8}>8px</option>
-        <option value={16}>16px</option>
-        <option value={32}>32px</option>
-      </select>
+      <input type="range" onChange={e => {
+        if (ctx) {
+          ctx.lineWidth = parseInt(e.target.value);
+        }
+      }} defaultValue={1} />
       <button
         onClick={() => {
           if (!ctx) {
