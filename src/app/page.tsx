@@ -1,5 +1,12 @@
 "use client";
-import { useRef, useState, useEffect } from "react";
+import {
+  useRef,
+  useState,
+  useEffect,
+  RefObject,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import styles from "./page.module.css";
 import useCanvasCtx from "@/utils/canvasContext";
 
@@ -10,13 +17,6 @@ export default function Home() {
   );
   const [shouldDraw, setShouldDraw] = useState(false);
   const ctxUtils = useCanvasCtx(ctx, "white");
-
-  const stopDrawing = () => {
-    if (shouldDraw && ctx) {
-      setShouldDraw(false);
-      ctx.beginPath();
-    }
-  };
 
   useEffect(() => {
     if (canvasRef.current) {
@@ -35,6 +35,42 @@ export default function Home() {
     }
   }, [canvasRef.current]);
 
+  return (
+    <main className={styles.main}>
+      <ControlPanel ctx={ctx} ctxUtils={ctxUtils} shouldDraw={shouldDraw} />
+      <DrawingCanvas
+        ctx={ctx}
+        ctxUtils={ctxUtils}
+        shouldDraw={shouldDraw}
+        setShouldDraw={setShouldDraw}
+        canvasRef={canvasRef}
+      />
+    </main>
+  );
+}
+
+interface DrawingCanvasProps {
+  ctx: CanvasRenderingContext2D | null | undefined;
+  shouldDraw: boolean;
+  setShouldDraw: Dispatch<SetStateAction<boolean>>;
+  ctxUtils: ReturnType<typeof useCanvasCtx>;
+  canvasRef: RefObject<HTMLCanvasElement>;
+}
+
+function DrawingCanvas({
+  ctx,
+  shouldDraw,
+  setShouldDraw,
+  ctxUtils,
+  canvasRef,
+}: DrawingCanvasProps) {
+  const stopDrawing = () => {
+    if (shouldDraw && ctx) {
+      setShouldDraw(false);
+      ctx.beginPath();
+    }
+  };
+
   const handleMouseMove = (clientX: number, clientY: number) => {
     if (ctx && canvasRef.current) {
       const x = clientX - canvasRef.current.offsetLeft;
@@ -50,37 +86,34 @@ export default function Home() {
   };
 
   return (
-    <main className={styles.main}>
-      <ControlPanel ctx={ctx} ctxUtils={ctxUtils} shouldDraw={shouldDraw} />
-      <canvas
-        height={500}
-        width={500}
-        ref={canvasRef}
-        onMouseMove={(e) => handleMouseMove(e.clientX, e.clientY)}
-        onMouseDown={() => {
-          ctxUtils.saveState();
-          setShouldDraw(true);
-        }}
-        onMouseUp={stopDrawing}
-        onMouseOut={stopDrawing}
-        onTouchStart={(e) => {
-          e.preventDefault();
-          ctxUtils.saveState();
-          setShouldDraw(true);
-        }}
-        onTouchMove={(e) => {
-          e.preventDefault();
-          const touch = e.changedTouches[0];
-          handleMouseMove(touch.clientX, touch.clientY);
-        }}
-        onTouchEnd={(e) => {
-          e.preventDefault();
-          stopDrawing();
-        }}
-      >
-        <p>Your browser does not support this.</p>
-      </canvas>
-    </main>
+    <canvas
+      height={500}
+      width={500}
+      ref={canvasRef}
+      onMouseMove={(e) => handleMouseMove(e.clientX, e.clientY)}
+      onMouseDown={() => {
+        ctxUtils.saveState();
+        setShouldDraw(true);
+      }}
+      onMouseUp={stopDrawing}
+      onMouseOut={stopDrawing}
+      onTouchStart={(e) => {
+        e.preventDefault();
+        ctxUtils.saveState();
+        setShouldDraw(true);
+      }}
+      onTouchMove={(e) => {
+        e.preventDefault();
+        const touch = e.changedTouches[0];
+        handleMouseMove(touch.clientX, touch.clientY);
+      }}
+      onTouchEnd={(e) => {
+        e.preventDefault();
+        stopDrawing();
+      }}
+    >
+      <p>Your browser does not support this.</p>
+    </canvas>
   );
 }
 
