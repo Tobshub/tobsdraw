@@ -6,6 +6,8 @@ import {
   RefObject,
   Dispatch,
   SetStateAction,
+  EventHandler,
+  SyntheticEvent,
 } from "react";
 import styles from "./page.module.css";
 import useCanvasCtx from "@/utils/canvasContext";
@@ -64,8 +66,15 @@ function DrawingCanvas({
   ctxUtils,
   canvasRef,
 }: DrawingCanvasProps) {
-  const stopDrawing = () => {
+  const [startCoords, setStartCoords] = useState({ x: 0, y: 0 });
+  const stopDrawing = (x: number, y: number) => {
     if (shouldDraw && ctx) {
+      if (x - startCoords.x === 0 && y - startCoords.y === 0) {
+        x = x - ctx.canvas.offsetLeft;
+        y = y - ctx.canvas.offsetTop;
+        ctx.arc(x, y, ctx.lineWidth, 0, 360);
+        ctx.fill();
+      }
       setShouldDraw(false);
       ctx.beginPath();
     }
@@ -85,8 +94,8 @@ function DrawingCanvas({
     }
   };
 
-  const handleStart = <V extends { preventDefault: Function }>(e: V) => {
-    e.preventDefault();
+  const handleStart = (x: number, y: number) => {
+    setStartCoords({ x, y });
     ctxUtils.saveState();
     setShouldDraw(true);
   };
@@ -97,10 +106,13 @@ function DrawingCanvas({
       width={500}
       ref={canvasRef}
       onMouseMove={(e) => handleMove(e.clientX, e.clientY)}
-      onMouseDown={handleStart}
-      onMouseUp={stopDrawing}
-      onMouseOut={stopDrawing}
-      onTouchStart={handleStart}
+      onMouseDown={(e) => handleStart(e.clientX, e.clientY)}
+      onMouseUp={(e) => stopDrawing(e.clientX, e.clientY)}
+      onMouseOut={(e) => stopDrawing(e.clientX, e.clientY)}
+      onTouchStart={(e) => {
+        const touch = e.changedTouches[0];
+        handleStart(touch.clientX, touch.clientY);
+      }}
       onTouchMove={(e) => {
         e.preventDefault();
         const touch = e.changedTouches[0];
@@ -108,7 +120,8 @@ function DrawingCanvas({
       }}
       onTouchEnd={(e) => {
         e.preventDefault();
-        stopDrawing();
+        const touch = e.changedTouches[0];
+        stopDrawing(touch.clientX, touch.clientY);
       }}
     >
       <p>Your browser does not support this.</p>
@@ -193,7 +206,3 @@ function ControlPanel({ ctx, ctxUtils, shouldDraw }: ControlPanelProps) {
     </div>
   );
 }
-
-// function degToRad(value: number) {
-//   return (value * Math.PI) / 180;
-// }
