@@ -67,11 +67,24 @@ function DrawingCanvas({
   const [startCoords, setStartCoords] = useState({ x: 0, y: 0 });
   const stopDrawing = (x: number, y: number) => {
     if (shouldDraw && ctx) {
-      if (x - startCoords.x === 0 && y - startCoords.y === 0) {
-        x = x - ctx.canvas.offsetLeft;
-        y = y - ctx.canvas.offsetTop;
+      x = x - ctx.canvas.offsetLeft;
+      y = y - ctx.canvas.offsetTop;
+      if (
+        ctxUtils.currentShape === "line" &&
+        x - startCoords.x === 0 &&
+        y - startCoords.y === 0
+      ) {
         ctx.arc(x, y, ctx.lineWidth, 0, 360);
         ctx.fill();
+      } else if (ctxUtils.currentShape === "rect") {
+        // console.log(startCoords, {x, y});
+        ctx.lineJoin = "miter";
+        ctx.strokeRect(
+          startCoords.x,
+          startCoords.y,
+          x - startCoords.x,
+          y - startCoords.y
+        );
       }
       setShouldDraw(false);
       ctx.beginPath();
@@ -83,8 +96,11 @@ function DrawingCanvas({
       const x = clientX - canvasRef.current.offsetLeft;
       const y = clientY - canvasRef.current.offsetTop;
       if (shouldDraw) {
-        ctx.lineTo(x, y);
-        ctx.stroke();
+        if (ctxUtils.currentShape === "line") {
+          ctx.lineJoin = "bevel";
+          ctx.lineTo(x, y);
+          ctx.stroke();
+        }
       } else {
         ctx.moveTo(x, y);
         ctx.beginPath();
@@ -93,9 +109,13 @@ function DrawingCanvas({
   };
 
   const handleStart = (x: number, y: number) => {
-    setStartCoords({ x, y });
-    ctxUtils.saveState();
-    setShouldDraw(true);
+    if (ctx) {
+      x = x - ctx.canvas.offsetLeft;
+      y = y - ctx.canvas.offsetTop;
+      setStartCoords({ x, y });
+      ctxUtils.saveState();
+      setShouldDraw(true);
+    }
   };
 
   return (
@@ -167,6 +187,19 @@ function ControlPanel({ ctx, ctxUtils, shouldDraw }: ControlPanelProps) {
         }}
         defaultValue={1}
       />
+      <select
+        onChange={(e) => {
+          const changeShapeTo = e.target.value as typeof ctxUtils.currentShape;
+          ctxUtils.setCurrentShape(changeShapeTo);
+        }}
+      >
+        <option defaultChecked value="line">
+          Line
+        </option>
+        <option value="rect">Rectangle</option>
+        <option value="circle">Circle</option>
+        <option value="elipse">Elipse</option>
+      </select>
       <button
         onClick={() => {
           if (!ctx) {

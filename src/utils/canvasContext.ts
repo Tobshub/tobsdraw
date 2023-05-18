@@ -6,6 +6,9 @@ export default function useCanvasCtx(
 ) {
   const [previousStates, setPreviousStates] = useState<ImageData[]>([]);
   const [nextStates, setNextStates] = useState<ImageData[]>([]);
+  const [currentShape, setCurrentShape] = useState<
+    "line" | "rect" | "circle" | "elipse"
+  >("line");
 
   const resetCanvas = () => {
     if (ctx) {
@@ -57,5 +60,7 @@ export default function useCanvasCtx(
     previousStates,
     nextStates,
     backgroundColor,
+    currentShape,
+    setCurrentShape: (value: typeof currentShape) => setCurrentShape(value),
   };
 }
