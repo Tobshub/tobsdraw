@@ -71,7 +71,7 @@ function DrawingCanvas({
     }
   };
 
-  const handleMouseMove = (clientX: number, clientY: number) => {
+  const handleMove = (clientX: number, clientY: number) => {
     if (ctx && canvasRef.current) {
       const x = clientX - canvasRef.current.offsetLeft;
       const y = clientY - canvasRef.current.offsetTop;
@@ -85,27 +85,26 @@ function DrawingCanvas({
     }
   };
 
+  const handleStart = <V extends { preventDefault: Function }>(e: V) => {
+    e.preventDefault();
+    ctxUtils.saveState();
+    setShouldDraw(true);
+  };
+
   return (
     <canvas
       height={500}
       width={500}
       ref={canvasRef}
-      onMouseMove={(e) => handleMouseMove(e.clientX, e.clientY)}
-      onMouseDown={() => {
-        ctxUtils.saveState();
-        setShouldDraw(true);
-      }}
+      onMouseMove={(e) => handleMove(e.clientX, e.clientY)}
+      onMouseDown={handleStart}
       onMouseUp={stopDrawing}
       onMouseOut={stopDrawing}
-      onTouchStart={(e) => {
-        e.preventDefault();
-        ctxUtils.saveState();
-        setShouldDraw(true);
-      }}
+      onTouchStart={handleStart}
       onTouchMove={(e) => {
         e.preventDefault();
         const touch = e.changedTouches[0];
-        handleMouseMove(touch.clientX, touch.clientY);
+        handleMove(touch.clientX, touch.clientY);
       }}
       onTouchEnd={(e) => {
         e.preventDefault();
