@@ -9,7 +9,7 @@ export default function useCanvasCtx(
   const [previousStates, setPreviousStates] = useState<ImageData[]>([]);
   const [nextStates, setNextStates] = useState<ImageData[]>([]);
   const [currentShape, setCurrentShape] = useState<
-    "line" | "rect" | "circle" | "elipse"
+    "line" | "rect" | "circle" | "ellipse"
   >("line");
 
   const resetCanvas = () => {

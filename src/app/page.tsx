@@ -86,8 +86,8 @@ function DrawingCanvas({
           ctxUtils.drawCircle(startCoords, { x, y });
           break;
         }
-        case "elipse": {
-          console.log("elipse");
+        case "ellipse": {
+          ctxUtils.drawEllipse(startCoords, {x, y});
           break;
         }
         default: {
@@ -208,7 +208,7 @@ function ControlPanel({ ctx, ctxUtils, shouldDraw }: ControlPanelProps) {
         </option>
         <option value="rect">Rectangle</option>
         <option value="circle">Circle</option>
-        <option value="elipse">Elipse</option>
+        <option value="ellipse">Elipse</option>
       </select>
       <button
         onClick={() => {
