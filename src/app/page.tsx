@@ -1,5 +1,5 @@
 "use client";
-import { useRef, MouseEvent, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import styles from "./page.module.css";
 import useCanvasCtx from "@/utils/canvasContext";
 
@@ -9,15 +9,7 @@ export default function Home() {
     canvasRef.current?.getContext("2d", { willReadFrequently: true })
   );
   const [shouldDraw, setShouldDraw] = useState(false);
-  const [isEraser, setIsEraser] = useState(false);
-  const colorChangerRef = useRef<HTMLInputElement>(null);
-  const backgroundColor = "white";
-  const ctxUtils = useCanvasCtx(ctx, backgroundColor);
-
-  const clearCanvas = () => {
-    ctxUtils.saveState();
-    ctxUtils.resetCanvas();
-  };
+  const ctxUtils = useCanvasCtx(ctx, "white");
 
   const stopDrawing = () => {
     if (shouldDraw && ctx) {
@@ -38,7 +30,6 @@ export default function Home() {
         ctx.beginPath();
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
-        ctx.fillStyle = colorChangerRef.current?.value ?? "black";
       }
       setCanvasCtx(ctx);
     }
@@ -60,67 +51,7 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <div
-        className={styles.controls}
-        style={{ opacity: shouldDraw ? "35%" : "80%" }}
-      >
-        <button onClick={clearCanvas}>CLEAR</button>
-        <input
-          type="color"
-          onChange={(e) => {
-            if (ctx) {
-              ctx.strokeStyle = e.target.value;
-              ctx.fillStyle = e.target.value;
-            }
-          }}
-          ref={colorChangerRef}
-        />
-        <select
-          onChange={(e) => {
-            if (ctx) {
-              ctx.lineWidth = parseInt(e.target.value);
-            }
-          }}
-        >
-          <option value={1} defaultChecked>
-            1px
-          </option>
-          <option value={2}>2px</option>
-          <option value={4}>4px</option>
-          <option value={8}>8px</option>
-          <option value={16}>16px</option>
-          <option value={32}>32px</option>
-        </select>
-        <button
-          onClick={() => {
-            if (!ctx) {
-              return;
-            } else if (isEraser) {
-              ctx.lineWidth = 1;
-              ctx.strokeStyle = colorChangerRef.current?.value ?? "black";
-              setIsEraser(false);
-            } else {
-              ctx.lineWidth = 50;
-              ctx.strokeStyle = backgroundColor;
-              setIsEraser(true);
-            }
-          }}
-        >
-          {isEraser ? "PEN" : "ERASER"}
-        </button>
-        <button
-          onClick={ctxUtils.undoCanvasState}
-          disabled={!ctxUtils.previousStates.length}
-        >
-          UNDO
-        </button>
-        <button
-          onClick={ctxUtils.redoCanvasState}
-          disabled={!ctxUtils.nextStates.length}
-        >
-          REDO
-        </button>
-      </div>
+      <ControlPanel ctx={ctx} ctxUtils={ctxUtils} shouldDraw={shouldDraw} />
       <canvas
         height={500}
         width={500}
@@ -150,6 +81,84 @@ export default function Home() {
         <p>Your browser does not support this.</p>
       </canvas>
     </main>
+  );
+}
+
+interface ControlPanelProps {
+  ctx: CanvasRenderingContext2D | null | undefined;
+  ctxUtils: ReturnType<typeof useCanvasCtx>;
+  shouldDraw: boolean;
+}
+
+function ControlPanel({ ctx, ctxUtils, shouldDraw }: ControlPanelProps) {
+  const colorChangerRef = useRef<HTMLInputElement>(null);
+  const [isEraser, setIsEraser] = useState(false);
+
+  const clearCanvas = () => {
+    ctxUtils.saveState();
+    ctxUtils.resetCanvas();
+  };
+
+  return (
+    <div
+      className={styles.controls}
+      style={{ opacity: shouldDraw ? "35%" : "80%" }}
+    >
+      <button onClick={clearCanvas}>CLEAR</button>
+      <input
+        type="color"
+        onChange={(e) => {
+          if (ctx) {
+            ctx.strokeStyle = e.target.value;
+            ctx.fillStyle = e.target.value;
+          }
+        }}
+        ref={colorChangerRef}
+      />
+      <select
+        onChange={(e) => {
+          if (ctx) {
+            ctx.lineWidth = parseInt(e.target.value);
+          }
+        }}
+      >
+        <option value={1} defaultChecked>
+          1px
+        </option>
+        <option value={2}>2px</option>
+        <option value={4}>4px</option>
+        <option value={8}>8px</option>
+        <option value={16}>16px</option>
+        <option value={32}>32px</option>
+      </select>
+      <button
+        onClick={() => {
+          if (!ctx) {
+            return;
+          } else if (isEraser) {
+            ctx.strokeStyle = colorChangerRef.current?.value ?? "black";
+            setIsEraser(false);
+          } else {
+            ctx.strokeStyle = ctxUtils.backgroundColor;
+            setIsEraser(true);
+          }
+        }}
+      >
+        {isEraser ? "PEN" : "ERASER"}
+      </button>
+      <button
+        onClick={ctxUtils.undoCanvasState}
+        disabled={!ctxUtils.previousStates.length}
+      >
+        UNDO
+      </button>
+      <button
+        onClick={ctxUtils.redoCanvasState}
+        disabled={!ctxUtils.nextStates.length}
+      >
+        REDO
+      </button>
+    </div>
   );
 }
 

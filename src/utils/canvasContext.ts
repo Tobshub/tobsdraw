@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export default function useCanvasCtx(
   ctx: CanvasRenderingContext2D | null | undefined,
-  backgroundColor?: string
+  backgroundColor: string = "black"
 ) {
   const [previousStates, setPreviousStates] = useState<ImageData[]>([]);
   const [nextStates, setNextStates] = useState<ImageData[]>([]);
@@ -10,9 +10,11 @@ export default function useCanvasCtx(
   const resetCanvas = () => {
     if (ctx) {
       ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      const prevFillStyle = ctx.fillStyle;
       ctx.fillStyle = backgroundColor ?? "white";
       ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
       ctx.fill();
+      ctx.fillStyle = prevFillStyle;
     }
   };
 
@@ -54,5 +56,6 @@ export default function useCanvasCtx(
     redoCanvasState,
     previousStates,
     nextStates,
+    backgroundColor,
   };
 }
