@@ -6,8 +6,6 @@ import {
   RefObject,
   Dispatch,
   SetStateAction,
-  EventHandler,
-  SyntheticEvent,
 } from "react";
 import styles from "./page.module.css";
 import useCanvasCtx from "@/utils/canvasContext";
