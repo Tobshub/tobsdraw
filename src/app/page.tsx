@@ -73,7 +73,7 @@ function DrawingCanvas({
       switch (ctxUtils.currentShape) {
         case "line": {
           if (x - startCoords.x === 0 && y - startCoords.y === 0) {
-            ctx.arc(x, y, ctx.lineWidth, 0, 360);
+            ctx.arc(x, y, Math.round(ctx.lineWidth / 2), 0, 360);
             ctx.fill();
           }
           break;
