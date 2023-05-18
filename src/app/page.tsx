@@ -65,7 +65,7 @@ function DrawingCanvas({
   canvasRef,
 }: DrawingCanvasProps) {
   const [startCoords, setStartCoords] = useState({ x: 0, y: 0 });
-  const stopDrawing = (x: number, y: number) => {
+  const finishDrawing = (x: number, y: number) => {
     if (shouldDraw && ctx) {
       x = x - ctx.canvas.offsetLeft;
       y = y - ctx.canvas.offsetTop;
@@ -108,7 +108,7 @@ function DrawingCanvas({
     }
   };
 
-  const handleStart = (x: number, y: number) => {
+  const startDrawing = (x: number, y: number) => {
     if (ctx) {
       x = x - ctx.canvas.offsetLeft;
       y = y - ctx.canvas.offsetTop;
@@ -125,12 +125,12 @@ function DrawingCanvas({
       width={500}
       ref={canvasRef}
       onMouseMove={(e) => handleMove(e.clientX, e.clientY)}
-      onMouseDown={(e) => handleStart(e.clientX, e.clientY)}
-      onMouseUp={(e) => stopDrawing(e.clientX, e.clientY)}
-      onMouseOut={(e) => stopDrawing(e.clientX, e.clientY)}
+      onMouseDown={(e) => startDrawing(e.clientX, e.clientY)}
+      onMouseUp={(e) => finishDrawing(e.clientX, e.clientY)}
+      onMouseOut={(e) => finishDrawing(e.clientX, e.clientY)}
       onTouchStart={(e) => {
         const touch = e.changedTouches[0];
-        handleStart(touch.clientX, touch.clientY);
+        startDrawing(touch.clientX, touch.clientY);
       }}
       onTouchMove={(e) => {
         e.preventDefault();
@@ -140,7 +140,7 @@ function DrawingCanvas({
       onTouchEnd={(e) => {
         e.preventDefault();
         const touch = e.changedTouches[0];
-        stopDrawing(touch.clientX, touch.clientY);
+        finishDrawing(touch.clientX, touch.clientY);
       }}
     >
       <p>Your browser does not support this.</p>
