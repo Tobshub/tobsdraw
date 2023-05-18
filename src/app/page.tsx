@@ -158,11 +158,15 @@ function ControlPanel({ ctx, ctxUtils, shouldDraw }: ControlPanelProps) {
         }}
         ref={colorChangerRef}
       />
-      <input type="range" onChange={e => {
-        if (ctx) {
-          ctx.lineWidth = parseInt(e.target.value);
-        }
-      }} defaultValue={1} />
+      <input
+        type="range"
+        onChange={(e) => {
+          if (ctx) {
+            ctx.lineWidth = parseInt(e.target.value);
+          }
+        }}
+        defaultValue={1}
+      />
       <button
         onClick={() => {
           if (!ctx) {
