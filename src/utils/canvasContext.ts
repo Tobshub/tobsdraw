@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+type Coord = { x: number; y: number };
+
 export default function useCanvasCtx(
   ctx: CanvasRenderingContext2D | null | undefined,
   backgroundColor: string = "black"
@@ -51,6 +53,27 @@ export default function useCanvasCtx(
     }
   };
 
+  const drawCircle = (startCoords: Coord, centerCoords: Coord) => {
+    if (ctx) {
+      ctx.lineJoin = "round";
+      const radius = distanceBetweenPoints(startCoords, centerCoords);
+      ctx.arc(centerCoords.x, centerCoords.y, radius, 0, 360);
+      ctx.stroke();
+    }
+  };
+
+  const drawRect = (startCoords: Coord, endCoords: Coord) => {
+    if (ctx) {
+      ctx.lineJoin = "miter";
+      ctx.strokeRect(
+        startCoords.x,
+        startCoords.y,
+        endCoords.x - startCoords.x,
+        endCoords.y - startCoords.y
+      );
+    }
+  };
+
   return {
     getCurrentState,
     saveState,
@@ -62,5 +85,13 @@ export default function useCanvasCtx(
     backgroundColor,
     currentShape,
     setCurrentShape: (value: typeof currentShape) => setCurrentShape(value),
+    drawCircle,
+    drawRect,
   };
+}
+
+export function distanceBetweenPoints(start: Coord, end: Coord) {
+  const x = (start.x - end.x) ** 2;
+  const y = (start.y - end.y) ** 2;
+  return Math.sqrt(x + y);
 }

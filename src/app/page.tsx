@@ -65,26 +65,35 @@ function DrawingCanvas({
   canvasRef,
 }: DrawingCanvasProps) {
   const [startCoords, setStartCoords] = useState({ x: 0, y: 0 });
+
   const finishDrawing = (x: number, y: number) => {
     if (shouldDraw && ctx) {
       x = x - ctx.canvas.offsetLeft;
       y = y - ctx.canvas.offsetTop;
-      if (
-        ctxUtils.currentShape === "line" &&
-        x - startCoords.x === 0 &&
-        y - startCoords.y === 0
-      ) {
-        ctx.arc(x, y, ctx.lineWidth, 0, 360);
-        ctx.fill();
-      } else if (ctxUtils.currentShape === "rect") {
-        // console.log(startCoords, {x, y});
-        ctx.lineJoin = "miter";
-        ctx.strokeRect(
-          startCoords.x,
-          startCoords.y,
-          x - startCoords.x,
-          y - startCoords.y
-        );
+      switch (ctxUtils.currentShape) {
+        case "line": {
+          if (x - startCoords.x === 0 && y - startCoords.y === 0) {
+            ctx.arc(x, y, ctx.lineWidth, 0, 360);
+            ctx.fill();
+          }
+          break;
+        }
+        case "rect": {
+          ctxUtils.drawRect(startCoords, { x, y });
+          break;
+        }
+        case "circle": {
+          ctxUtils.drawCircle(startCoords, { x, y });
+          break;
+        }
+        case "elipse": {
+          console.log("elipse");
+          break;
+        }
+        default: {
+          console.error("SOMETHING UNEXPECTED HAPPENED");
+          break;
+        }
       }
       setShouldDraw(false);
       ctx.beginPath();
