@@ -74,6 +74,22 @@ export default function useCanvasCtx(
     }
   };
 
+  const drawEllipse = (startCoords: Coord, centerCoords: Coord) => {
+    if (ctx) {
+      ctx.lineJoin = "round";
+      ctx.ellipse(
+        centerCoords.x,
+        centerCoords.y,
+        Math.abs(startCoords.x - centerCoords.x),
+        Math.abs(startCoords.y - centerCoords.y),
+        0,
+        0,
+        360
+      );
+      ctx.stroke();
+    }
+  };
+
   return {
     getCurrentState,
     saveState,
@@ -87,6 +103,7 @@ export default function useCanvasCtx(
     setCurrentShape: (value: typeof currentShape) => setCurrentShape(value),
     drawCircle,
     drawRect,
+    drawEllipse,
   };
 }
 
