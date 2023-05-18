@@ -120,6 +120,7 @@ function DrawingCanvas({
 
   return (
     <canvas
+      className="drawing-canvas"
       height={500}
       width={500}
       ref={canvasRef}
