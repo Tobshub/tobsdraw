@@ -87,7 +87,7 @@ function DrawingCanvas({
           break;
         }
         case "ellipse": {
-          ctxUtils.drawEllipse(startCoords, {x, y});
+          ctxUtils.drawEllipse(startCoords, { x, y });
           break;
         }
         default: {
@@ -198,6 +198,7 @@ function ControlPanel({ ctx, ctxUtils, shouldDraw }: ControlPanelProps) {
       />
       <input
         type="range"
+        ref={lineWidthChangerRef}
         onChange={(e) => {
           if (ctx) {
             ctx.lineWidth = parseInt(e.target.value);
