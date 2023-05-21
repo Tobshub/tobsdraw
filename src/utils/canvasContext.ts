@@ -95,7 +95,11 @@ export default function useCanvasCtx(
 
     const canvasImageData = getCurrentState()!.data;
     const origin_px = (y * ctx.canvas.width + x) * 4;
-    const origin_color = canvasImageData.slice(origin_px, origin_px + 4);
+    const origin_color = [
+      canvasImageData[origin_px],
+      canvasImageData[origin_px + 1],
+      canvasImageData[origin_px + 2],
+    ];
     const queue: { x: number; y: number }[] = [];
 
     const enqueNeighbours = (x: number, y: number) => {
@@ -106,12 +110,12 @@ export default function useCanvasCtx(
         { x: x, y: y + 1 }, // Bottom
       ];
 
-      for (const neighbor of neighbors) {
+      neighbors.forEach((neighbor) => {
         const { x, y } = neighbor;
         if (x >= 0 && x < ctx.canvas.width && y >= 0 && y < ctx.canvas.height) {
           queue.push({ x, y });
         }
-      }
+      });
     };
 
     queue.push({ x, y });
@@ -120,13 +124,17 @@ export default function useCanvasCtx(
     while (queue.length > 0) {
       const { x: i, y: j } = queue.pop() as { x: number; y: number };
       const current_px = (j * ctx.canvas.width + i) * 4;
-      const current_color = canvasImageData.slice(current_px, current_px + 4);
+      const current_color = [
+        canvasImageData[current_px],
+        canvasImageData[current_px + 1],
+        canvasImageData[current_px + 2],
+      ];
 
       if (
         colorMatch(origin_color, current_color) &&
         !colorMatch(
           current_color,
-          new Uint8ClampedArray([fillColor.r, fillColor.g, fillColor.b])
+          [fillColor.r, fillColor.g, fillColor.b]
         )
       ) {
         canvasImageData[current_px] = fillColor.r;
@@ -178,7 +186,7 @@ function hexToRGBA(hex: string) {
   return { r, g, b, a: 255 };
 }
 
-function colorMatch(color1: Uint8ClampedArray, color2: Uint8ClampedArray) {
+function colorMatch(color1: number[], color2: number[]) {
   const tolerance = 2;
   const dr = Math.abs(color1[0] - color2[0]);
   const dg = Math.abs(color1[1] - color2[1]);
