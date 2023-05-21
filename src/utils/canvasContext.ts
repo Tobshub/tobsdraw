@@ -170,6 +170,10 @@ export default function useCanvasCtx(
   return {
     drawDot,
     drawLine,
+    drawCircle,
+    drawRect,
+    drawEllipse,
+    fill,
     getCurrentState,
     saveState,
     resetCanvas,
@@ -180,10 +184,6 @@ export default function useCanvasCtx(
     backgroundColor,
     currentShape,
     setCurrentShape: (value: typeof currentShape) => setCurrentShape(value),
-    drawCircle,
-    drawRect,
-    drawEllipse,
-    fill,
   };
 }
 
