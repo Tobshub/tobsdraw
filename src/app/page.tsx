@@ -28,6 +28,8 @@ export default function Home() {
         }
         ctxUtils.resetCanvas();
         ctx.beginPath();
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = "high";
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
       }
