@@ -11,6 +11,7 @@ export default function useCanvasCtx(
   const [currentShape, setCurrentShape] = useState<
     "line" | "rect" | "circle" | "ellipse" | "fill" | "free"
   >("free");
+  const [isEraser, setIsEraser] = useState(false);
 
   const resetCanvas = () => {
     if (ctx) {
@@ -184,6 +185,8 @@ export default function useCanvasCtx(
     backgroundColor,
     currentShape,
     setCurrentShape: (value: typeof currentShape) => setCurrentShape(value),
+    isEraser,
+    setIsEraser: (value: boolean) => setIsEraser(value)
   };
 }
 

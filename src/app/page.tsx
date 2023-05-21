@@ -70,37 +70,43 @@ function DrawingCanvas({
     if (shouldDraw && ctx) {
       x = x - ctx.canvas.offsetLeft;
       y = y - ctx.canvas.offsetTop;
-      switch (ctxUtils.currentShape) {
-        case "free": {
-          if (x - startCoords.x === 0 && y - startCoords.y === 0) {
-            ctxUtils.drawDot(startCoords);
+      if (ctxUtils.isEraser) {
+        if (x - startCoords.x === 0 && y - startCoords.y === 0) {
+          ctxUtils.drawDot(startCoords);
+        }
+      } else {
+        switch (ctxUtils.currentShape) {
+          case "free": {
+            if (x - startCoords.x === 0 && y - startCoords.y === 0) {
+              ctxUtils.drawDot(startCoords);
+            }
+            break;
           }
-          break;
-        }
-        case "line": {
-          ctxUtils.drawLine(startCoords, { x, y });
-          break;
-        }
-        case "rect": {
-          ctxUtils.drawRect(startCoords, { x, y });
-          break;
-        }
-        case "circle": {
-          ctxUtils.drawCircle(startCoords, { x, y });
-          break;
-        }
-        case "ellipse": {
-          ctxUtils.drawEllipse(startCoords, { x, y });
-          break;
-        }
-        case "fill": {
-          ctx.fillStyle = ctx.strokeStyle;
-          ctxUtils.fill(x, y);
-          break;
-        }
-        default: {
-          console.error("SOMETHING UNEXPECTED HAPPENED");
-          break;
+          case "line": {
+            ctxUtils.drawLine(startCoords, { x, y });
+            break;
+          }
+          case "rect": {
+            ctxUtils.drawRect(startCoords, { x, y });
+            break;
+          }
+          case "circle": {
+            ctxUtils.drawCircle(startCoords, { x, y });
+            break;
+          }
+          case "ellipse": {
+            ctxUtils.drawEllipse(startCoords, { x, y });
+            break;
+          }
+          case "fill": {
+            ctx.fillStyle = ctx.strokeStyle;
+            ctxUtils.fill(x, y);
+            break;
+          }
+          default: {
+            console.error("SOMETHING UNEXPECTED HAPPENED");
+            break;
+          }
         }
       }
       setShouldDraw(false);
@@ -113,7 +119,7 @@ function DrawingCanvas({
       const x = clientX - canvasRef.current.offsetLeft;
       const y = clientY - canvasRef.current.offsetTop;
       if (shouldDraw) {
-        if (ctxUtils.currentShape === "free") {
+        if (ctxUtils.currentShape === "free" || ctxUtils.isEraser) {
           ctx.lineJoin = "bevel";
           ctx.lineTo(x, y);
           ctx.stroke();
@@ -173,7 +179,6 @@ interface ControlPanelProps {
 
 function ControlPanel({ ctx, ctxUtils, shouldDraw }: ControlPanelProps) {
   const colorChangerRef = useRef<HTMLInputElement>(null);
-  const [isEraser, setIsEraser] = useState(false);
 
   const clearCanvas = () => {
     ctxUtils.saveState();
@@ -224,16 +229,16 @@ function ControlPanel({ ctx, ctxUtils, shouldDraw }: ControlPanelProps) {
         onClick={() => {
           if (!ctx) {
             return;
-          } else if (isEraser) {
+          } else if (ctxUtils.isEraser) {
             ctx.strokeStyle = colorChangerRef.current?.value ?? "black";
-            setIsEraser(false);
+            ctxUtils.setIsEraser(false);
           } else {
             ctx.strokeStyle = ctxUtils.backgroundColor;
-            setIsEraser(true);
+            ctxUtils.setIsEraser(true);
           }
         }}
       >
-        {isEraser ? "PEN" : "ERASER"}
+        {ctxUtils.isEraser ? "PEN" : "ERASER"}
       </button>
       <button
         onClick={ctxUtils.undoCanvasState}
