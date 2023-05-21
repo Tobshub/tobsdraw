@@ -9,7 +9,7 @@ export default function useCanvasCtx(
   const [previousStates, setPreviousStates] = useState<ImageData[]>([]);
   const [nextStates, setNextStates] = useState<ImageData[]>([]);
   const [currentShape, setCurrentShape] = useState<
-    "line" | "rect" | "circle" | "ellipse"
+    "line" | "rect" | "circle" | "ellipse" | "fill"
   >("line");
 
   const resetCanvas = () => {
@@ -90,6 +90,53 @@ export default function useCanvasCtx(
     }
   };
 
+  const fill = (x: number, y: number) => {
+    if (!ctx) return;
+    const fullCanvas = getCurrentState()!.data;
+    const origin_px = (y * ctx.canvas.width + x) * 4;
+    const origin_color = fullCanvas.slice(origin_px, origin_px + 4);
+    const queue: { x: number; y: number }[] = [];
+
+    const enqueNeighbours = (x: number, y: number) => {
+      const neighbors = [
+        { x: x - 1, y: y }, // Left
+        { x: x + 1, y: y }, // Right
+        { x: x, y: y - 1 }, // Top
+        { x: x, y: y + 1 }, // Bottom
+      ];
+
+      for (const neighbor of neighbors) {
+        const { x, y } = neighbor;
+        if (x >= 0 && x < ctx.canvas.width && y >= 0 && y < ctx.canvas.height) {
+          queue.push({ x, y });
+        }
+      }
+    };
+
+    queue.push({ x, y });
+
+    while (queue.length > 0) {
+      const { x: i, y: j } = queue.pop() as { x: number; y: number };
+      const current_px = (j * ctx.canvas.width + i) * 4;
+      let current_color = fullCanvas.slice(current_px, current_px + 4);
+      if (colorMatch(origin_color, current_color)) {
+        const fillColor = hexToRGBA(ctx.fillStyle as string);
+        fullCanvas[current_px] = fillColor.r;
+        fullCanvas[current_px + 1] = fillColor.g;
+        fullCanvas[current_px + 2] = fillColor.b;
+        enqueNeighbours(i, j);
+      } else {
+        continue;
+      }
+    }
+    const imageData = new ImageData(
+      fullCanvas,
+      ctx.canvas.width,
+      ctx.canvas.height
+    );
+    ctx.putImageData(imageData, 0, 0);
+  };
+
   return {
     getCurrentState,
     saveState,
@@ -104,6 +151,7 @@ export default function useCanvasCtx(
     drawCircle,
     drawRect,
     drawEllipse,
+    fill
   };
 }
 
@@ -111,4 +159,20 @@ export function distanceBetweenPoints(start: Coord, end: Coord) {
   const x = (start.x - end.x) ** 2;
   const y = (start.y - end.y) ** 2;
   return Math.sqrt(x + y);
+}
+
+function hexToRGBA(hex: string) {
+  const bigint = parseInt(hex.replace("#", ""), 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return { r, g, b, a: 255 };
+}
+
+function colorMatch(color1: Uint8ClampedArray, color2: Uint8ClampedArray) {
+  const tolerance = 2;
+  const dr = Math.abs(color1[0] - color2[0]);
+  const dg = Math.abs(color1[1] - color2[1]);
+  const db = Math.abs(color1[2] - color2[2]);
+  return dr <= tolerance && dg <= tolerance && db <= tolerance;
 }

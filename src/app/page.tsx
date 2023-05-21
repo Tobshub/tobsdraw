@@ -23,8 +23,8 @@ export default function Home() {
       const ctx = canvasRef.current.getContext("2d");
       if (ctx) {
         if (window) {
-          ctx.canvas.width = window.innerWidth;
-          ctx.canvas.height = window.innerHeight;
+          ctx.canvas.width = 400;
+          ctx.canvas.height = 300;
         }
         ctxUtils.resetCanvas();
         ctx.beginPath();
@@ -89,6 +89,11 @@ function DrawingCanvas({
         }
         case "ellipse": {
           ctxUtils.drawEllipse(startCoords, { x, y });
+          break;
+        }
+        case "fill": {
+          ctx.fillStyle = ctx.strokeStyle;
+          ctxUtils.fill(x, y);
           break;
         }
         default: {
@@ -179,7 +184,7 @@ function ControlPanel({ ctx, ctxUtils, shouldDraw }: ControlPanelProps) {
     if (lineWidthChangerRef.current && ctx) {
       ctx.lineWidth = parseInt(lineWidthChangerRef.current.value);
     }
-  }, [])
+  }, []);
 
   return (
     <div
@@ -219,6 +224,7 @@ function ControlPanel({ ctx, ctxUtils, shouldDraw }: ControlPanelProps) {
         <option value="rect">Rectangle</option>
         <option value="circle">Circle</option>
         <option value="ellipse">Elipse</option>
+        <option value="fill">Fill</option>
       </select>
       <button
         onClick={() => {
