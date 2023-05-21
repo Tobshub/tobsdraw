@@ -120,10 +120,15 @@ export default function useCanvasCtx(
     while (queue.length > 0) {
       const { x: i, y: j } = queue.pop() as { x: number; y: number };
       const current_px = (j * ctx.canvas.width + i) * 4;
-      let current_color = canvasImageData.slice(current_px, current_px + 4);
+      const current_color = canvasImageData.slice(current_px, current_px + 4);
 
-      if (colorMatch(origin_color, current_color)) {
-        const fillColor = hexToRGBA(ctx.fillStyle as string);
+      if (
+        colorMatch(origin_color, current_color) &&
+        !colorMatch(
+          current_color,
+          new Uint8ClampedArray([fillColor.r, fillColor.g, fillColor.b])
+        )
+      ) {
         canvasImageData[current_px] = fillColor.r;
         canvasImageData[current_px + 1] = fillColor.g;
         canvasImageData[current_px + 2] = fillColor.b;
@@ -155,7 +160,7 @@ export default function useCanvasCtx(
     drawCircle,
     drawRect,
     drawEllipse,
-    fill
+    fill,
   };
 }
 
