@@ -180,12 +180,6 @@ function ControlPanel({ ctx, ctxUtils, shouldDraw }: ControlPanelProps) {
 
   const lineWidthChangerRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (lineWidthChangerRef.current && ctx) {
-      ctx.lineWidth = parseInt(lineWidthChangerRef.current.value);
-    }
-  }, []);
-
   return (
     <div
       className={styles.controls}
