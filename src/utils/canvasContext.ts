@@ -92,6 +92,7 @@ export default function useCanvasCtx(
 
   const fill = (x: number, y: number) => {
     if (!ctx) return;
+
     const fullCanvas = getCurrentState()!.data;
     const origin_px = (y * ctx.canvas.width + x) * 4;
     const origin_color = fullCanvas.slice(origin_px, origin_px + 4);
@@ -119,6 +120,7 @@ export default function useCanvasCtx(
       const { x: i, y: j } = queue.pop() as { x: number; y: number };
       const current_px = (j * ctx.canvas.width + i) * 4;
       let current_color = fullCanvas.slice(current_px, current_px + 4);
+
       if (colorMatch(origin_color, current_color)) {
         const fillColor = hexToRGBA(ctx.fillStyle as string);
         fullCanvas[current_px] = fillColor.r;
@@ -129,6 +131,7 @@ export default function useCanvasCtx(
         continue;
       }
     }
+
     const imageData = new ImageData(
       fullCanvas,
       ctx.canvas.width,
