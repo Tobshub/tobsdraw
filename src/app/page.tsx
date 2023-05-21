@@ -178,8 +178,6 @@ function ControlPanel({ ctx, ctxUtils, shouldDraw }: ControlPanelProps) {
     ctxUtils.resetCanvas();
   };
 
-  const lineWidthChangerRef = useRef<HTMLInputElement>(null);
-
   return (
     <div
       className={styles.controls}
@@ -198,7 +196,6 @@ function ControlPanel({ ctx, ctxUtils, shouldDraw }: ControlPanelProps) {
       />
       <input
         type="range"
-        ref={lineWidthChangerRef}
         onChange={(e) => {
           if (ctx) {
             ctx.lineWidth = parseInt(e.target.value);
