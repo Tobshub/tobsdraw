@@ -9,8 +9,8 @@ export default function useCanvasCtx(
   const [previousStates, setPreviousStates] = useState<ImageData[]>([]);
   const [nextStates, setNextStates] = useState<ImageData[]>([]);
   const [currentShape, setCurrentShape] = useState<
-    "line" | "rect" | "circle" | "ellipse" | "fill"
-  >("line");
+    "line" | "rect" | "circle" | "ellipse" | "fill" | "free"
+  >("free");
 
   const resetCanvas = () => {
     if (ctx) {
@@ -153,7 +153,23 @@ export default function useCanvasCtx(
     ctx.putImageData(imageData, 0, 0);
   };
 
+  const drawLine = (start: Coord, end: Coord) => {
+    if (!ctx) return;
+    ctx.moveTo(start.x, start.y);
+    ctx.lineTo(end.x, end.y);
+    ctx.stroke();
+  };
+
+  const drawDot = ({ x, y }: Coord) => {
+    if (!ctx) return;
+    const r = Math.round(ctx.lineWidth / 2);
+    ctx.arc(x, y, r, 0, 360);
+    ctx.fill();
+  };
+
   return {
+    drawDot,
+    drawLine,
     getCurrentState,
     saveState,
     resetCanvas,

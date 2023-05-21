@@ -71,12 +71,14 @@ function DrawingCanvas({
       x = x - ctx.canvas.offsetLeft;
       y = y - ctx.canvas.offsetTop;
       switch (ctxUtils.currentShape) {
-        case "line": {
+        case "free": {
           if (x - startCoords.x === 0 && y - startCoords.y === 0) {
-            const r = Math.round(ctx.lineWidth / 2);
-            ctx.arc(x, y, r, 0, 360);
-            ctx.fill();
+            ctxUtils.drawDot(startCoords);
           }
+          break;
+        }
+        case "line": {
+          ctxUtils.drawLine(startCoords, { x, y });
           break;
         }
         case "rect": {
@@ -111,7 +113,7 @@ function DrawingCanvas({
       const x = clientX - canvasRef.current.offsetLeft;
       const y = clientY - canvasRef.current.offsetTop;
       if (shouldDraw) {
-        if (ctxUtils.currentShape === "line") {
+        if (ctxUtils.currentShape === "free") {
           ctx.lineJoin = "bevel";
           ctx.lineTo(x, y);
           ctx.stroke();
@@ -209,9 +211,10 @@ function ControlPanel({ ctx, ctxUtils, shouldDraw }: ControlPanelProps) {
           ctxUtils.setCurrentShape(changeShapeTo);
         }}
       >
-        <option defaultChecked value="line">
-          Line
+        <option defaultChecked value="free">
+          Free
         </option>
+        <option value="line">Line</option>
         <option value="rect">Rectangle</option>
         <option value="circle">Circle</option>
         <option value="ellipse">Elipse</option>
