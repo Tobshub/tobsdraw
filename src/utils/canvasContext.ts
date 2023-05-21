@@ -115,6 +115,7 @@ export default function useCanvasCtx(
     };
 
     queue.push({ x, y });
+    const fillColor = hexToRGBA(ctx.fillStyle as string);
 
     while (queue.length > 0) {
       const { x: i, y: j } = queue.pop() as { x: number; y: number };
