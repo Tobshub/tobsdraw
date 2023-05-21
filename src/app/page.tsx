@@ -23,8 +23,8 @@ export default function Home() {
       const ctx = canvasRef.current.getContext("2d");
       if (ctx) {
         if (window) {
-          ctx.canvas.width = 400;
-          ctx.canvas.height = 300;
+          ctx.canvas.width = window.innerWidth;
+          ctx.canvas.height = window.innerHeight;
         }
         ctxUtils.resetCanvas();
         ctx.beginPath();
