@@ -53,11 +53,12 @@ export default function useCanvasCtx(
     }
   };
 
-  const drawCircle = (startCoords: Coord, centerCoords: Coord) => {
+  const drawCircle = (startCoords: Coord, endCoords: Coord) => {
     if (ctx) {
       ctx.lineJoin = "round";
-      const radius = distanceBetweenPoints(startCoords, centerCoords);
-      ctx.arc(centerCoords.x, centerCoords.y, radius, 0, 360);
+      const midPoint = calculateMidPoint(startCoords, endCoords);
+      const r = distanceBetweenPoints(startCoords, midPoint);
+      ctx.arc(midPoint.x, midPoint.y, r, 0, 360);
       ctx.stroke();
     }
   };
@@ -74,14 +75,15 @@ export default function useCanvasCtx(
     }
   };
 
-  const drawEllipse = (startCoords: Coord, centerCoords: Coord) => {
+  const drawEllipse = (startCoords: Coord, endCoords: Coord) => {
     if (ctx) {
       ctx.lineJoin = "round";
+      const midPoint = calculateMidPoint(startCoords, endCoords);
       ctx.ellipse(
-        centerCoords.x,
-        centerCoords.y,
-        Math.abs(startCoords.x - centerCoords.x),
-        Math.abs(startCoords.y - centerCoords.y),
+        midPoint.x,
+        midPoint.y,
+        Math.abs(startCoords.x - midPoint.x),
+        Math.abs(startCoords.y - midPoint.y),
         0,
         0,
         360
@@ -132,10 +134,7 @@ export default function useCanvasCtx(
 
       if (
         colorMatch(origin_color, current_color) &&
-        !colorMatch(
-          current_color,
-          [fillColor.r, fillColor.g, fillColor.b]
-        )
+        !colorMatch(current_color, [fillColor.r, fillColor.g, fillColor.b])
       ) {
         canvasImageData[current_px] = fillColor.r;
         canvasImageData[current_px + 1] = fillColor.g;
@@ -176,6 +175,12 @@ export function distanceBetweenPoints(start: Coord, end: Coord) {
   const x = (start.x - end.x) ** 2;
   const y = (start.y - end.y) ** 2;
   return Math.sqrt(x + y);
+}
+
+function calculateMidPoint(start: Coord, end: Coord) {
+  const x = (end.x + start.x) / 2;
+  const y = (end.y + start.y) / 2;
+  return { x, y };
 }
 
 function hexToRGBA(hex: string) {
