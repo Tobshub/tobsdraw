@@ -20,7 +20,9 @@ export default function Home() {
 
   useEffect(() => {
     if (canvasRef.current) {
-      const ctx = canvasRef.current.getContext("2d");
+      const ctx = canvasRef.current.getContext("2d", {
+        willReadFrequently: true,
+      });
       if (ctx) {
         if (window) {
           ctx.canvas.width = window.innerWidth;
@@ -135,10 +137,10 @@ function DrawingCanvas({
 
   const startDrawing = (x: number, y: number) => {
     if (ctx) {
+      ctxUtils.saveState();
       x = x - ctx.canvas.offsetLeft;
       y = y - ctx.canvas.offsetTop;
       setStartCoords({ x, y });
-      ctxUtils.saveState();
       setShouldDraw(true);
     }
   };

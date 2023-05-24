@@ -14,28 +14,24 @@ export default function useCanvasCtx(
   const [isEraser, setIsEraser] = useState(false);
 
   const resetCanvas = () => {
-    if (ctx) {
-      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      const prevFillStyle = ctx.fillStyle;
-      ctx.fillStyle = backgroundColor ?? "white";
-      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      ctx.fill();
-      ctx.fillStyle = prevFillStyle;
-    }
+    if (!ctx) return;
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    const prevFillStyle = ctx.fillStyle;
+    ctx.fillStyle = backgroundColor ?? "white";
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.fill();
+    ctx.fillStyle = prevFillStyle;
   };
 
   const getCurrentState = () => {
-    if (ctx) {
-      return ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
-    }
-  };
+    if (!ctx) return;
+    return ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+  }
 
   const saveState = () => {
-    if (ctx) {
       const lastCanvasState = getCurrentState() as ImageData;
       setPreviousStates((state) => [...state, lastCanvasState]);
       setNextStates([]);
-    }
   };
 
   const undoCanvasState = () => {
@@ -55,17 +51,16 @@ export default function useCanvasCtx(
   };
 
   const drawCircle = (startCoords: Coord, endCoords: Coord) => {
-    if (ctx) {
+    if (!ctx) return;
       ctx.lineJoin = "round";
       const midPoint = calculateMidPoint(startCoords, endCoords);
       const r = distanceBetweenPoints(startCoords, midPoint);
       ctx.arc(midPoint.x, midPoint.y, r, 0, 360);
       ctx.stroke();
-    }
   };
 
   const drawRect = (startCoords: Coord, endCoords: Coord) => {
-    if (ctx) {
+    if (!ctx) return;
       ctx.lineJoin = "miter";
       ctx.strokeRect(
         startCoords.x,
@@ -73,11 +68,10 @@ export default function useCanvasCtx(
         endCoords.x - startCoords.x,
         endCoords.y - startCoords.y
       );
-    }
   };
 
   const drawEllipse = (startCoords: Coord, endCoords: Coord) => {
-    if (ctx) {
+    if (!ctx) return;
       ctx.lineJoin = "round";
       const midPoint = calculateMidPoint(startCoords, endCoords);
       ctx.ellipse(
@@ -90,12 +84,10 @@ export default function useCanvasCtx(
         360
       );
       ctx.stroke();
-    }
   };
 
   const fill = (x: number, y: number) => {
     if (!ctx) return;
-
     const canvasImageData = getCurrentState()!.data;
     const origin_px = (y * ctx.canvas.width + x) * 4;
     const origin_color = [
@@ -186,7 +178,7 @@ export default function useCanvasCtx(
     currentShape,
     setCurrentShape: (value: typeof currentShape) => setCurrentShape(value),
     isEraser,
-    setIsEraser: (value: boolean) => setIsEraser(value)
+    setIsEraser: (value: boolean) => setIsEraser(value),
   };
 }
 
