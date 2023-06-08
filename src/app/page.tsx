@@ -71,6 +71,16 @@ function DrawingCanvas({
   const [startCoords, setStartCoords] = useState({ x: 0, y: 0 });
 
   const finishDrawing = (x: number, y: number) => {
+    ctx?.setLineDash([0]);
+    if (ctxUtils.isScaffolding) {
+      const stateBeforeScaffolding = ctxUtils.previousStates.at(-1);
+      if (stateBeforeScaffolding) {
+        ctx?.putImageData(stateBeforeScaffolding, 0, 0);
+      } else {
+        ctxUtils.resetCanvas();
+      }
+      ctxUtils.setIsScaffolding(false);
+    }
     if (shouldDraw && ctx) {
       x = x - ctx.canvas.offsetLeft;
       y = y - ctx.canvas.offsetTop;
@@ -127,6 +137,18 @@ function DrawingCanvas({
           ctx.lineJoin = "bevel";
           ctx.lineTo(x, y);
           ctx.stroke();
+        } else if (ctxUtils.currentShape === "rect") {
+          ctx.setLineDash([4, 16]);
+          if (ctxUtils.isScaffolding) {
+            const stateBeforeScaffolding = ctxUtils.previousStates.at(-1);
+            if (stateBeforeScaffolding) {
+              ctx.putImageData(stateBeforeScaffolding, 0, 0);
+            } else {
+              ctxUtils.resetCanvas();
+            }
+          }
+          ctxUtils.drawRect(startCoords, { x, y });
+          ctxUtils.setIsScaffolding(true);
         }
       } else {
         ctx.moveTo(x, y);
