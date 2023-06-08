@@ -138,7 +138,8 @@ function DrawingCanvas({
           ctx.lineTo(x, y);
           ctx.stroke();
         } else if (ctxUtils.currentShape === "rect") {
-          ctx.setLineDash([4, 16]);
+          // don't use line dash
+          // ctx.setLineDash([4, 16]);
           if (ctxUtils.isScaffolding) {
             const stateBeforeScaffolding = ctxUtils.previousStates.at(-1);
             if (stateBeforeScaffolding) {
@@ -257,9 +258,11 @@ function ControlPanel({ ctx, ctxUtils, shouldDraw }: ControlPanelProps) {
             return;
           } else if (ctxUtils.isEraser) {
             ctx.strokeStyle = colorChangerRef.current?.value ?? "black";
+            ctx.fillStyle = colorChangerRef.current?.value ?? "black";
             ctxUtils.setIsEraser(false);
           } else {
             ctx.strokeStyle = ctxUtils.backgroundColor;
+            ctx.fillStyle = ctxUtils.backgroundColor;
             ctxUtils.setIsEraser(true);
           }
         }}
